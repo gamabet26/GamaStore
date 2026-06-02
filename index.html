@@ -298,7 +298,8 @@ select option{background:#12121a}
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
   getFirestore, collection, doc, addDoc, deleteDoc,
-  onSnapshot, serverTimestamp, query, orderBy, enableIndexedDbPersistence
+  onSnapshot, serverTimestamp, query, orderBy,
+  enableMultiTabIndexedDbPersistence
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 // ── WATERMARK CIRCUIT ANIMATION ──────────────────
@@ -366,8 +367,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-// Habilita persistencia offline (funciona aunque no haya internet)
-enableIndexedDbPersistence(db).catch(()=>{});
+// Persistencia offline (multi-tab safe)
+enableMultiTabIndexedDbPersistence(db).catch(err => {
+  console.warn('Offline persistence:', err.code);
+  // No bloqueamos la app si falla la persistencia
+});
 
 // ── ESTADO LOCAL ───────────────────────────────────
 let lotes=[], ventas=[];
@@ -405,18 +409,7 @@ function getStock(){
   return r;
 }
 
-// ── REALTIME LISTENERS ─────────────────────────────
-function startListeners(){
-  onSnapshot(query(collection(db,'lotes'),orderBy('fecha','asc')), snap=>{
-    lotes=snap.docs.map(d=>({id:d.id,...d.data()}));
-    setDots('ok');refreshUI();
-  }, ()=>setDots('err'));
 
-  onSnapshot(query(collection(db,'ventas'),orderBy('fecha','asc')), snap=>{
-    ventas=snap.docs.map(d=>({id:d.id,...d.data()}));
-    setDots('ok');refreshUI();
-  }, ()=>setDots('err'));
-}
 
 function refreshUI(){
   const active=document.querySelector('.page.active');
@@ -489,7 +482,7 @@ window.registrarVenta=async function(){
     toast('Venta registrada ✓');
     $('v-producto').value='';$('v-qty').value='1';$('v-precio').value='';
     $('calc-box').style.display='none';
-  }catch(e){toast('Error al guardar','var(--red)','#fff');}
+  }catch(e){console.error(e);toast('Error: '+e.code,'var(--red)','#fff');}
   btn.disabled=false;
   btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Registrar venta';
 };
@@ -527,7 +520,7 @@ window.agregarLote=async function(){
     await addDoc(collection(db,'lotes'),{producto:nombre,qty,costo,nota,fecha:nowISO(),ts:serverTimestamp()});
     $('i-nombre').value='';$('i-qty').value='';$('i-costo').value='';$('i-nota').value='';
     toast('Lote agregado ✓');
-  }catch(e){toast('Error al guardar','var(--red)','#fff');}
+  }catch(e){console.error(e);toast('Error: '+e.code,'var(--red)','#fff');}
   btn.disabled=false;
   btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Agregar al inventario';
 };
@@ -654,35 +647,47 @@ window.clearAllData=async function(){
 };
 
 // ── INIT ───────────────────────────────────────────
-$('splash-msg').textContent='Conectando a Firebase...';
-startListeners();
-
-// Ocultar splash después de primer dato o timeout
 let splashGone=false;
 function hideSplash(){
-  if(splashGone)return;splashGone=true;
+  if(splashGone)return; splashGone=true;
   setTimeout(()=>{
     $('splash').classList.add('hide');
     setTimeout(()=>$('splash').style.display='none',400);
-  },600);
+  },500);
 }
-// Timeout máximo de splash: 3 segundos
-setTimeout(hideSplash, 3000);
+setTimeout(hideSplash, 3500);
 
-// Detectar offline
 window.addEventListener('online', ()=>$('offline-banner').classList.remove('show'));
 window.addEventListener('offline',()=>$('offline-banner').classList.add('show'));
 
-// Override refreshUI para also hide splash
-const _origRefresh=refreshUI;
-function refreshUIAndSplash(){_origRefresh();hideSplash();}
-// Patch listeners
-onSnapshot(query(collection(db,'lotes'),orderBy('fecha','asc')),snap=>{
-  lotes=snap.docs.map(d=>({id:d.id,...d.data()}));setDots('ok');refreshUIAndSplash();
-});
-onSnapshot(query(collection(db,'ventas'),orderBy('fecha','asc')),snap=>{
-  ventas=snap.docs.map(d=>({id:d.id,...d.data()}));setDots('ok');refreshUIAndSplash();
-});
+$('splash-msg').textContent='Conectando a Firebase...';
+
+// ── UN SOLO SET DE LISTENERS ──
+onSnapshot(
+  query(collection(db,'lotes'), orderBy('fecha','asc')),
+  snap => {
+    lotes = snap.docs.map(d=>({id:d.id,...d.data()}));
+    setDots('ok'); hideSplash(); refreshUI();
+  },
+  err => {
+    console.error('Lotes error:', err);
+    setDots('err');
+    hideSplash();
+    toast('Error Firestore: '+err.code,'var(--red)','#fff');
+  }
+);
+
+onSnapshot(
+  query(collection(db,'ventas'), orderBy('fecha','asc')),
+  snap => {
+    ventas = snap.docs.map(d=>({id:d.id,...d.data()}));
+    setDots('ok'); hideSplash(); refreshUI();
+  },
+  err => {
+    console.error('Ventas error:', err);
+    setDots('err');
+  }
+);
 
 renderVentaPage();
 
