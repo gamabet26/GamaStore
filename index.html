@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="GamaStore">
 <meta name="theme-color" content="#0a0a0f">
 <title>GamaStore – Techn & Gadgets</title>
@@ -20,28 +21,20 @@
 }
 body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;font-size:15px;overscroll-behavior:none}
 #wm-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
-
-/* SPLASH */
 #splash{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;transition:opacity .4s}
 #splash.hide{opacity:0;pointer-events:none}
 .splash-logo{font-family:var(--display);font-size:72px;font-weight:700;color:var(--accent);letter-spacing:-4px;line-height:1}
 .splash-name{font-family:var(--display);font-size:24px;font-weight:600;color:var(--text);letter-spacing:1px}
 .splash-sub{font-size:11px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase}
 .splash-status{font-size:12px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:8px}
-.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;display:inline-block;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* NAV */
 nav{position:fixed;bottom:0;left:0;right:0;background:rgba(18,18,26,.97);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);backdrop-filter:blur(12px)}
 nav button{flex:1;background:none;border:none;color:var(--muted);padding:10px 0 8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-family:var(--font);transition:color .15s;letter-spacing:.3px}
 nav button.active{color:var(--accent)}
 nav button svg{width:22px;height:22px;stroke-width:1.8}
-
-/* PAGES */
 .page{display:none;padding:0 16px 90px;max-width:480px;margin:0 auto;position:relative;z-index:1}
 .page.active{display:block}
-
-/* HEADER */
 .page-header{display:flex;align-items:center;gap:10px;padding:12px 0 16px;border-bottom:1px solid var(--border);margin-bottom:18px}
 .gs-logo{width:36px;height:36px;border-radius:50%;background:rgba(56,182,255,.12);border:1.5px solid rgba(56,182,255,.4);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:14px;color:var(--accent);letter-spacing:-1px;flex-shrink:0}
 .brand-name{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:.5px;line-height:1.1}
@@ -55,19 +48,13 @@ nav button svg{width:22px;height:22px;stroke-width:1.8}
 .sync-dot.err{background:var(--red)}
 .sync-dot.loading{background:var(--amber);animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* CARDS */
-.card{background:rgba(18,18,26,.85);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;backdrop-filter:blur(4px)}
+.card{background:rgba(18,18,26,.85);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
 .card-sm{background:rgba(18,18,26,.85);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px}
-
-/* STATS */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .stat{background:rgba(18,18,26,.85);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
 .stat-label{font-size:10px;color:var(--muted);margin-bottom:5px;font-weight:500;text-transform:uppercase;letter-spacing:.6px}
 .stat-val{font-size:22px;font-weight:700;font-family:var(--display);letter-spacing:.5px}
 .stat-val.green{color:var(--green)}.stat-val.amber{color:var(--amber)}.stat-val.accent{color:var(--accent)}
-
-/* FORM */
 label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:500;text-transform:uppercase;letter-spacing:.5px}
 input,select{width:100%;background:rgba(26,26,38,.95);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:16px;font-family:var(--font);padding:12px 14px;outline:none;transition:border .15s;-webkit-appearance:none;appearance:none}
 input:focus,select:focus{border-color:var(--accent)}
@@ -75,8 +62,6 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 select option{background:#12121a}
 .field{margin-bottom:14px}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-
-/* BUTTONS */
 .btn{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;font-family:var(--display);cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.5px;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn:active{transform:scale(.98);opacity:.85}
 .btn:disabled{opacity:.5;cursor:not-allowed}
@@ -85,13 +70,9 @@ select option{background:#12121a}
 .btn-ghost{background:rgba(26,26,38,.9);color:var(--text);border:1px solid var(--border)}
 .btn-danger{background:var(--red-bg);color:var(--red);border:1px solid #3a1010}
 .btn-sm{padding:9px 14px;font-size:13px;width:auto}
-
-/* CALC BOX */
 .calc-box{background:rgba(26,26,38,.9);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px}
 .calc-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;color:var(--muted)}
 .calc-total{display:flex;justify-content:space-between;font-size:17px;font-weight:700;padding-top:8px;border-top:1px solid var(--border);margin-top:6px;font-family:var(--display);letter-spacing:.3px}
-
-/* LISTS */
 .prod-item{display:flex;align-items:center;justify-content:space-between;background:rgba(18,18,26,.85);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;margin-bottom:8px}
 .prod-name{font-weight:600;font-size:14px}.prod-meta{font-size:12px;color:var(--muted);margin-top:2px}
 .stock-ok{color:var(--green);font-weight:700;font-size:14px;font-family:var(--display)}
@@ -121,18 +102,14 @@ select option{background:#12121a}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .delete-btn{background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;border-radius:4px;flex-shrink:0}
 .delete-btn:active{color:var(--red)}
-
-/* SYNC BANNER */
-.sync-banner{background:rgba(255,92,92,.1);border:1px solid rgba(255,92,92,.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--red);display:none;align-items:center;gap:8px}
-.sync-banner.show{display:flex}
+.offline-banner{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--amber);display:none;align-items:center;gap:8px}
+.offline-banner.show{display:flex}
 </style>
 </head>
 <body>
-
 <canvas id="wm-canvas"></canvas>
 <div class="toast" id="toast"></div>
 
-<!-- SPLASH -->
 <div id="splash">
   <div class="splash-logo">GS</div>
   <div class="splash-name">GamaStore</div>
@@ -140,19 +117,17 @@ select option{background:#12121a}
   <div class="splash-status"><span class="spinner"></span><span id="splash-msg">Conectando...</span></div>
 </div>
 
-<!-- OFFLINE BANNER -->
-<div class="sync-banner" id="offline-banner">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-  Sin conexión — los cambios se guardarán cuando vuelva internet
+<div class="offline-banner" id="offline-banner">
+  ⚠ Sin conexión — los cambios se sincronizarán cuando vuelva internet
 </div>
 
-<!-- ═══ VENTA ═══ -->
+<!-- VENTA -->
 <div class="page active" id="page-venta">
   <div class="page-header">
     <div class="gs-logo">GS</div>
     <div><div class="brand-name">Gama<span>Store</span></div><div class="brand-sub">Techn &amp; Gadgets</div></div>
     <div class="header-right">
-      <div class="sync-dot loading" id="dot-venta" title="Sincronización"></div>
+      <div class="sync-dot loading" id="dot-nav"></div>
       <div class="badge" id="stock-badge">0 items</div>
     </div>
   </div>
@@ -178,15 +153,12 @@ select option{background:#12121a}
   <div id="ventas-hoy"></div>
 </div>
 
-<!-- ═══ INVENTARIO ═══ -->
+<!-- INVENTARIO -->
 <div class="page" id="page-inventario">
   <div class="page-header">
     <div class="gs-logo">GS</div>
     <div><div class="brand-name">Gama<span>Store</span></div><div class="brand-sub">Techn &amp; Gadgets</div></div>
-    <div class="header-right">
-      <div class="sync-dot loading" id="dot-inv"></div>
-      <span class="section-label">INVENTARIO</span>
-    </div>
+    <div class="header-right"><div class="sync-dot loading" id="dot-inv"></div><span class="section-label">INVENTARIO</span></div>
   </div>
   <div class="section-title">Agregar lote</div>
   <div class="card">
@@ -205,15 +177,12 @@ select option{background:#12121a}
   <div id="lista-inventario"></div>
 </div>
 
-<!-- ═══ GANANCIAS ═══ -->
+<!-- GANANCIAS -->
 <div class="page" id="page-ganancias">
   <div class="page-header">
     <div class="gs-logo">GS</div>
     <div><div class="brand-name">Gama<span>Store</span></div><div class="brand-sub">Techn &amp; Gadgets</div></div>
-    <div class="header-right">
-      <div class="sync-dot loading" id="dot-gan"></div>
-      <span class="section-label">GANANCIAS</span>
-    </div>
+    <div class="header-right"><div class="sync-dot loading" id="dot-gan"></div><span class="section-label">GANANCIAS</span></div>
   </div>
   <div class="period-tabs">
     <div class="ptab active" onclick="setPeriod('hoy',this)">Hoy</div>
@@ -233,15 +202,12 @@ select option{background:#12121a}
   <div id="g-historial"></div>
 </div>
 
-<!-- ═══ COMPARTIR ═══ -->
+<!-- COMPARTIR -->
 <div class="page" id="page-compartir">
   <div class="page-header">
     <div class="gs-logo">GS</div>
     <div><div class="brand-name">Gama<span>Store</span></div><div class="brand-sub">Techn &amp; Gadgets</div></div>
-    <div class="header-right">
-      <div class="sync-dot loading" id="dot-comp"></div>
-      <span class="section-label">COMPARTIR</span>
-    </div>
+    <div class="header-right"><div class="sync-dot loading" id="dot-comp"></div><span class="section-label">COMPARTIR</span></div>
   </div>
   <div class="section-title">Tu QR oficial</div>
   <div class="qr-container">
@@ -256,13 +222,13 @@ select option{background:#12121a}
     <button class="btn btn-ghost" onclick="copyLink()" style="margin-bottom:12px">Copiar link</button>
   </div>
   <hr class="divider">
-  <div class="section-title">Estado de Firebase</div>
+  <div class="section-title">Estado</div>
   <div class="card-sm" style="margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:10px">
-      <div class="sync-dot ok" id="dot-fb" style="width:10px;height:10px;flex-shrink:0"></div>
+      <div class="sync-dot ok" style="width:10px;height:10px;flex-shrink:0"></div>
       <div>
-        <div style="font-size:13px;font-weight:600;color:var(--green)">Conectado · gamastore</div>
-        <div style="font-size:11px;color:var(--muted)">Sincronización en tiempo real activa</div>
+        <div style="font-size:13px;font-weight:600;color:var(--green)">Firebase Realtime Database</div>
+        <div style="font-size:11px;color:var(--muted)">gamastore-default-rtdb.firebaseio.com</div>
       </div>
     </div>
   </div>
@@ -297,12 +263,10 @@ select option{background:#12121a}
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import {
-  getFirestore, collection, doc, addDoc, deleteDoc,
-  onSnapshot, serverTimestamp, query, orderBy,
-  enableMultiTabIndexedDbPersistence
-} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  getDatabase, ref, push, remove, onValue, set
+} from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js';
 
-// ── WATERMARK CIRCUIT ANIMATION ──────────────────
+// ── WATERMARK ──
 (function(){
   const cv=document.getElementById('wm-canvas'),ctx=cv.getContext('2d');
   let W,H,t=0,circuits=[];
@@ -310,18 +274,16 @@ import {
   function pL(p){let l=0;for(let i=1;i<p.length;i++){const dx=p[i][0]-p[i-1][0],dy=p[i][1]-p[i-1][1];l+=Math.sqrt(dx*dx+dy*dy)}return l}
   function pA(p,t){let r=t;for(let i=1;i<p.length;i++){const dx=p[i][0]-p[i-1][0],dy=p[i][1]-p[i-1][1];const s=Math.sqrt(dx*dx+dy*dy);if(r<=s){const f=r/s;return[p[i-1][0]+dx*f,p[i-1][1]+dy*f]}r-=s}return p[p.length-1]}
   function mk(p,c,sp,th){return{p,c,sp,th,len:pL(p),off:Math.random()*1e3,pl:80+Math.random()*120}}
-  function build(){
-    const m=18;circuits=[
-      mk([[0,m],[W*.3,m],[W*.3,m+40],[W*.55,m+40],[W*.55,m],[W,m],[W,H*.4]],A,.6,1.2),
-      mk([[0,H-m],[W*.25,H-m],[W*.25,H-m-35],[W*.5,H-m-35],[W*.5,H-m],[W,H-m]],G,.45,1),
-      mk([[m,0],[m,H*.2],[m+50,H*.2],[m+50,H*.2+30],[m,H*.2+30],[m,H*.55],[m+35,H*.55],[m+35,H*.55+25],[m,H*.55+25],[m,H]],A,.5,1),
-      mk([[W-m,0],[W-m,H*.15],[W-m-45,H*.15],[W-m-45,H*.15+28],[W-m,H*.15+28],[W-m,H*.6],[W-m-38,H*.6],[W-m-38,H*.6+22],[W-m,H*.6+22],[W-m,H]],G,.55,1),
-      mk([[m*3,m*4],[m*3+60,m*4],[m*3+60,m*4+50],[m*3+110,m*4+50]],A,.35,.7),
-      mk([[W-m*3,H-m*5],[W-m*3-70,H-m*5],[W-m*3-70,H-m*5-40],[W-m*3-120,H-m*5-40]],G,.4,.7),
-      mk([[W*.7,m*2],[W*.7,m*2+30],[W*.85,m*2+30],[W*.85,m*2+60]],A,.65,.8),
-      mk([[W*.15,H-m*3],[W*.15,H-m*3-35],[W*.08,H-m*3-35],[W*.08,H-m*3-60]],G,.5,.8)
-    ]
-  }
+  function build(){const m=18;circuits=[
+    mk([[0,m],[W*.3,m],[W*.3,m+40],[W*.55,m+40],[W*.55,m],[W,m],[W,H*.4]],A,.6,1.2),
+    mk([[0,H-m],[W*.25,H-m],[W*.25,H-m-35],[W*.5,H-m-35],[W*.5,H-m],[W,H-m]],G,.45,1),
+    mk([[m,0],[m,H*.2],[m+50,H*.2],[m+50,H*.2+30],[m,H*.2+30],[m,H*.55],[m+35,H*.55],[m+35,H*.55+25],[m,H*.55+25],[m,H]],A,.5,1),
+    mk([[W-m,0],[W-m,H*.15],[W-m-45,H*.15],[W-m-45,H*.15+28],[W-m,H*.15+28],[W-m,H*.6],[W-m-38,H*.6],[W-m-38,H*.6+22],[W-m,H*.6+22],[W-m,H]],G,.55,1),
+    mk([[m*3,m*4],[m*3+60,m*4],[m*3+60,m*4+50],[m*3+110,m*4+50]],A,.35,.7),
+    mk([[W-m*3,H-m*5],[W-m*3-70,H-m*5],[W-m*3-70,H-m*5-40],[W-m*3-120,H-m*5-40]],G,.4,.7),
+    mk([[W*.7,m*2],[W*.7,m*2+30],[W*.85,m*2+30],[W*.85,m*2+60]],A,.65,.8),
+    mk([[W*.15,H-m*3],[W*.15,H-m*3-35],[W*.08,H-m*3-35],[W*.08,H-m*3-60]],G,.5,.8)
+  ]}
   function dc(c,t){
     ctx.beginPath();ctx.moveTo(c.p[0][0],c.p[0][1]);
     for(let i=1;i<c.p.length;i++)ctx.lineTo(c.p[i][0],c.p[i][1]);
@@ -336,44 +298,35 @@ import {
     }
     const tp=pA(c.p,Math.max(0,Math.min(c.len,pos+c.pl)));
     ctx.beginPath();ctx.arc(tp[0],tp[1],c.th+1.2,0,Math.PI*2);ctx.fillStyle=c.c+'0.9)';ctx.fill();
-    const g=ctx.createRadialGradient(tp[0],tp[1],0,tp[0],tp[1],8);
-    g.addColorStop(0,c.c+'0.5)');g.addColorStop(1,c.c+'0)');
-    ctx.beginPath();ctx.arc(tp[0],tp[1],8,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+    const g2=ctx.createRadialGradient(tp[0],tp[1],0,tp[0],tp[1],8);
+    g2.addColorStop(0,c.c+'0.5)');g2.addColorStop(1,c.c+'0)');
+    ctx.beginPath();ctx.arc(tp[0],tp[1],8,0,Math.PI*2);ctx.fillStyle=g2;ctx.fill();
     for(const p of c.p){ctx.fillStyle=c.c+'0.1)';ctx.fillRect(p[0]-2,p[1]-2,4,4)}
   }
   function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;build()}
   let last=0;
   function loop(ts){const dt=Math.min((ts-last)/1e3,.05);last=ts;t+=dt;
     ctx.clearRect(0,0,W,H);
-    ctx.save();ctx.font='bold '+Math.min(W,H)*.52+'px Rajdhani,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.save();ctx.font='bold '+Math.min(W,H)*.52+'px Rajdhani,sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.strokeStyle='rgba(56,182,255,0.04)';ctx.lineWidth=1;ctx.strokeText('GS',W/2,H/2);
     ctx.fillStyle='rgba(56,182,255,0.025)';ctx.fillText('GS',W/2,H/2);ctx.restore();
-    for(const c of circuits)dc(c,t);
-    requestAnimationFrame(loop);
+    for(const c of circuits)dc(c,t);requestAnimationFrame(loop);
   }
   window.addEventListener('resize',resize);resize();requestAnimationFrame(loop);
 })();
 
-// ── FIREBASE CONFIG (ya configurado) ──────────────
-const firebaseConfig = {
-  apiKey:    "AIzaSyCK83yQZKiCP0MSouNy4Ccc2-ZSJy6BcTc",
-  authDomain:"gamastore.firebaseapp.com",
-  projectId: "gamastore",
-  storageBucket:"gamastore.firebasestorage.app",
-  messagingSenderId:"265957415019",
-  appId:     "1:265957415019:web:d644162f69ebf2b40bb92e"
-};
-
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
-
-// Persistencia offline (multi-tab safe)
-enableMultiTabIndexedDbPersistence(db).catch(err => {
-  console.warn('Offline persistence:', err.code);
-  // No bloqueamos la app si falla la persistencia
+// ── FIREBASE REALTIME DATABASE ──
+const app = initializeApp({
+  apiKey:      "AIzaSyCK83yQZKiCP0MSouNy4Ccc2-ZSJy6BcTc",
+  authDomain:  "gamastore.firebaseapp.com",
+  databaseURL: "https://gamastore-default-rtdb.firebaseio.com",
+  projectId:   "gamastore",
+  appId:       "1:265957415019:web:d644162f69ebf2b40bb92e"
 });
+const db = getDatabase(app);
 
-// ── ESTADO LOCAL ───────────────────────────────────
+// ── ESTADO ──
 let lotes=[], ventas=[];
 const $=id=>document.getElementById(id);
 const fmt=n=>'$'+Number(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -382,7 +335,7 @@ const today=()=>new Date().toISOString().slice(0,10);
 const nowISO=()=>new Date().toISOString();
 
 function setDots(state){
-  ['dot-venta','dot-inv','dot-gan','dot-comp','dot-fb'].forEach(id=>{
+  ['dot-nav','dot-inv','dot-gan','dot-comp'].forEach(id=>{
     const d=$(id);if(!d)return;
     d.className='sync-dot '+(state==='ok'?'ok':state==='err'?'err':'loading');
   });
@@ -393,7 +346,6 @@ function toast(msg,color='var(--green)',tc='#021a0a'){
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);
 }
 
-// ── STOCK CALC ─────────────────────────────────────
 function getStock(){
   const rec={},cost={};
   lotes.forEach(l=>{
@@ -409,82 +361,89 @@ function getStock(){
   return r;
 }
 
-
-
-function refreshUI(){
-  const active=document.querySelector('.page.active');
-  if(!active)return;
-  const name=active.id.replace('page-','');
-  if(name==='venta')renderVentaPage();
-  if(name==='inventario')renderInventario();
-  if(name==='ganancias')renderGanancias();
+// ── REALTIME LISTENERS ──
+let splashGone=false;
+function hideSplash(){
+  if(splashGone)return;splashGone=true;
+  setTimeout(()=>{$('splash').classList.add('hide');setTimeout(()=>$('splash').style.display='none',400);},400);
 }
 
-// ── NAVIGATION ─────────────────────────────────────
+onValue(ref(db,'lotes'), snap=>{
+  lotes=[];
+  snap.forEach(child=>{lotes.push({id:child.key,...child.val()})});
+  setDots('ok');hideSplash();refreshUI();
+}, err=>{
+  console.error('lotes:',err);setDots('err');hideSplash();
+  toast('Error DB: '+err.message,'var(--red)','#fff');
+});
+
+onValue(ref(db,'ventas'), snap=>{
+  ventas=[];
+  snap.forEach(child=>{ventas.push({id:child.key,...child.val()})});
+  setDots('ok');hideSplash();refreshUI();
+}, err=>{
+  console.error('ventas:',err);setDots('err');
+});
+
+setTimeout(hideSplash, 4000);
+window.addEventListener('online', ()=>$('offline-banner').classList.remove('show'));
+window.addEventListener('offline',()=>$('offline-banner').classList.add('show'));
+
+// ── NAVIGATION ──
 window.showPage=function(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  $('page-'+name).classList.add('active');
-  $('nav-'+name).classList.add('active');
+  $('page-'+name).classList.add('active');$('nav-'+name).classList.add('active');
   if(name==='venta')renderVentaPage();
   if(name==='inventario')renderInventario();
   if(name==='ganancias')renderGanancias();
   if(name==='compartir')renderCompartir();
 };
 
-// ── VENTA ──────────────────────────────────────────
+function refreshUI(){
+  const a=document.querySelector('.page.active');if(!a)return;
+  const n=a.id.replace('page-','');
+  if(n==='venta')renderVentaPage();
+  if(n==='inventario')renderInventario();
+  if(n==='ganancias')renderGanancias();
+}
+
+// ── VENTA ──
 function renderVentaPage(){
-  const stock=getStock();
-  const sel=$('v-producto'),prev=sel.value;
+  const stock=getStock(),sel=$('v-producto'),prev=sel.value;
   sel.innerHTML='<option value="">— Selecciona producto —</option>';
   Object.entries(stock).filter(([,s])=>s.stock>0).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([p,s])=>{
     const o=document.createElement('option');o.value=p;
-    o.textContent=p+' ('+s.stock+' uds)';if(p===prev)o.selected=true;
-    sel.appendChild(o);
+    o.textContent=p+' ('+s.stock+' uds)';if(p===prev)o.selected=true;sel.appendChild(o);
   });
   $('stock-badge').textContent=Object.keys(stock).length+' items';
   renderVentasHoy();
 }
 
 window.updateCalc=function(){
-  const prod=$('v-producto').value;
-  const qty=parseFloat($('v-qty').value)||0;
-  const precio=parseFloat($('v-precio').value)||0;
+  const prod=$('v-producto').value,qty=parseFloat($('v-qty').value)||0,precio=parseFloat($('v-precio').value)||0;
   if(!prod||qty<=0||precio<=0){$('calc-box').style.display='none';return;}
-  const st=getStock();
-  const costo=st[prod]?.costo||0;
-  const sub=qty*precio,ct=qty*costo,gan=sub-ct;
+  const costo=getStock()[prod]?.costo||0,sub=qty*precio,ct=qty*costo,gan=sub-ct;
   $('calc-box').style.display='block';
-  $('c-subtotal').textContent=fmt(sub);
-  $('c-costo').textContent=fmt(ct);
-  $('c-ganancia').textContent=fmt(gan);
-  $('c-ganancia').style.color=gan>=0?'var(--green)':'var(--red)';
+  $('c-subtotal').textContent=fmt(sub);$('c-costo').textContent=fmt(ct);
+  $('c-ganancia').textContent=fmt(gan);$('c-ganancia').style.color=gan>=0?'var(--green)':'var(--red)';
 };
 
 window.registrarVenta=async function(){
-  const prod=$('v-producto').value;
-  const qty=parseFloat($('v-qty').value)||0;
-  const precio=parseFloat($('v-precio').value)||0;
+  const prod=$('v-producto').value,qty=parseFloat($('v-qty').value)||0,precio=parseFloat($('v-precio').value)||0;
   if(!prod){toast('Selecciona un producto','var(--red)','#fff');return;}
   if(qty<=0){toast('Ingresa la cantidad','var(--red)','#fff');return;}
   if(precio<=0){toast('Ingresa el precio','var(--red)','#fff');return;}
   const st=getStock();
   if((st[prod]?.stock||0)<qty){toast('Stock insuficiente ⚠','var(--amber)','#0a0a0f');return;}
   const costo=st[prod]?.costo||0;
-  const btn=$('btn-venta');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Guardando...';
+  const btn=$('btn-venta');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Guardando...';
   try{
-    await addDoc(collection(db,'ventas'),{
-      producto:prod,qty,precioUnit:precio,costo,
-      total:qty*precio,ganancia:qty*precio-qty*costo,
-      fecha:nowISO(),ts:serverTimestamp()
-    });
+    await push(ref(db,'ventas'),{producto:prod,qty,precioUnit:precio,costo,total:qty*precio,ganancia:qty*precio-qty*costo,fecha:nowISO()});
     toast('Venta registrada ✓');
-    $('v-producto').value='';$('v-qty').value='1';$('v-precio').value='';
-    $('calc-box').style.display='none';
-  }catch(e){console.error(e);toast('Error: '+e.code,'var(--red)','#fff');}
-  btn.disabled=false;
-  btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Registrar venta';
+    $('v-producto').value='';$('v-qty').value='1';$('v-precio').value='';$('calc-box').style.display='none';
+  }catch(e){console.error(e);toast('Error: '+e.message,'var(--red)','#fff');}
+  btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Registrar venta';
 };
 
 function renderVentasHoy(){
@@ -498,57 +457,42 @@ function renderVentasHoy(){
       <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
         <div class="sale-total">${fmt(v.total)}</div>
         <div class="sale-gain ${v.ganancia>=0?'gain-pos':'gain-neg'}">${fmt(v.ganancia)}</div>
-        <button class="delete-btn" onclick="deleteVenta('${v.id}')" style="margin-top:2px">
+        <button class="delete-btn" onclick="deleteItem('ventas','${v.id}')">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
         </button>
       </div>
     </div>`).join('');
 }
 
-// ── INVENTARIO ─────────────────────────────────────
+// ── INVENTARIO ──
 window.agregarLote=async function(){
-  const nombre=$('i-nombre').value.trim();
-  const qty=parseFloat($('i-qty').value)||0;
-  const costo=parseFloat($('i-costo').value)||0;
-  const nota=$('i-nota').value.trim();
+  const nombre=$('i-nombre').value.trim(),qty=parseFloat($('i-qty').value)||0,costo=parseFloat($('i-costo').value)||0,nota=$('i-nota').value.trim();
   if(!nombre){toast('Ingresa el nombre','var(--red)','#fff');return;}
   if(qty<=0){toast('Ingresa la cantidad','var(--red)','#fff');return;}
   if(costo<=0){toast('Ingresa el costo','var(--red)','#fff');return;}
-  const btn=$('btn-lote');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Guardando...';
+  const btn=$('btn-lote');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Guardando...';
   try{
-    await addDoc(collection(db,'lotes'),{producto:nombre,qty,costo,nota,fecha:nowISO(),ts:serverTimestamp()});
+    await push(ref(db,'lotes'),{producto:nombre,qty,costo,nota,fecha:nowISO()});
     $('i-nombre').value='';$('i-qty').value='';$('i-costo').value='';$('i-nota').value='';
     toast('Lote agregado ✓');
-  }catch(e){console.error(e);toast('Error: '+e.code,'var(--red)','#fff');}
-  btn.disabled=false;
-  btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Agregar al inventario';
+  }catch(e){console.error(e);toast('Error: '+e.message,'var(--red)','#fff');}
+  btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Agregar al inventario';
 };
 
-window.deleteLote=async function(id){
-  if(!confirm('¿Eliminar este lote?'))return;
-  try{await deleteDoc(doc(db,'lotes',id));toast('Lote eliminado');}
-  catch(e){toast('Error','var(--red)','#fff');}
-};
-
-window.deleteVenta=async function(id){
-  if(!confirm('¿Eliminar esta venta?'))return;
-  try{await deleteDoc(doc(db,'ventas',id));toast('Venta eliminada');}
+window.deleteItem=async function(col,id){
+  if(!confirm('¿Eliminar?'))return;
+  try{await remove(ref(db,col+'/'+id));toast('Eliminado');}
   catch(e){toast('Error','var(--red)','#fff');}
 };
 
 function renderInventario(){
-  const cont=$('lista-inventario'),stock=getStock();
-  const prods=Object.entries(stock);
+  const cont=$('lista-inventario'),stock=getStock(),prods=Object.entries(stock);
   if(!prods.length){cont.innerHTML='<div class="empty"><p>Sin inventario aún</p></div>';return;}
   let html=prods.sort((a,b)=>a[0].localeCompare(b[0])).map(([p,s])=>{
     const st=s.stock;
-    return`<div class="prod-item">
-      <div><div class="prod-name">${p}</div><div class="prod-meta">Costo prom: ${fmt(s.costo)}</div></div>
-      <div style="text-align:right">
-        <div class="${st<=0?'stock-out':st<=5?'stock-low':'stock-ok'}">${st} uds</div>
-        <div class="chip ${st<=0?'chip-red':st<=5?'chip-amber':'chip-green'}">${st<=0?'AGOTADO':st<=5?'BAJO':'OK'}</div>
-      </div></div>`;
+    return`<div class="prod-item"><div><div class="prod-name">${p}</div><div class="prod-meta">Costo prom: ${fmt(s.costo)}</div></div>
+      <div style="text-align:right"><div class="${st<=0?'stock-out':st<=5?'stock-low':'stock-ok'}">${st} uds</div>
+      <div class="chip ${st<=0?'chip-red':st<=5?'chip-amber':'chip-green'}">${st<=0?'AGOTADO':st<=5?'BAJO':'OK'}</div></div></div>`;
   }).join('');
   if(lotes.length){
     html+=`<div class="section-title" style="margin-top:18px">Lotes registrados</div>`;
@@ -559,7 +503,7 @@ function renderInventario(){
           <div style="font-size:11px;color:var(--muted)">${l.qty} uds · ${fmt(l.costo)}/u${l.nota?' · '+l.nota:''}</div>
           <div style="font-size:11px;color:var(--muted)">${new Date(l.fecha).toLocaleDateString('es-MX')}</div>
         </div>
-        <button class="delete-btn" onclick="deleteLote('${l.id}')">
+        <button class="delete-btn" onclick="deleteItem('lotes','${l.id}')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
         </button>
       </div>`).join('');
@@ -567,34 +511,22 @@ function renderInventario(){
   cont.innerHTML=html;
 }
 
-// ── GANANCIAS ──────────────────────────────────────
+// ── GANANCIAS ──
 let currentPeriod='hoy';
-window.setPeriod=function(p,el){
-  currentPeriod=p;
-  document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');renderGanancias();
-};
-
+window.setPeriod=function(p,el){currentPeriod=p;document.querySelectorAll('.ptab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderGanancias();};
 function filterVentas(){
   const now=new Date(),hoy=today();
-  return ventas.filter(v=>{
-    if(!v.fecha)return false;
-    const d=new Date(v.fecha);
+  return ventas.filter(v=>{if(!v.fecha)return false;const d=new Date(v.fecha);
     if(currentPeriod==='hoy')return v.fecha.slice(0,10)===hoy;
     if(currentPeriod==='semana')return(now-d)/(864e5)<7;
     if(currentPeriod==='mes')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-    return true;
-  });
+    return true;});
 }
-
 function renderGanancias(){
-  const v=filterVentas();
-  const total=v.reduce((s,x)=>s+x.total,0);
-  const gan=v.reduce((s,x)=>s+x.ganancia,0);
+  const v=filterVentas(),total=v.reduce((s,x)=>s+x.total,0),gan=v.reduce((s,x)=>s+x.ganancia,0);
   $('g-total').textContent=fmt(total);$('g-ganancia').textContent=fmt(gan);
   $('g-txn').textContent=v.length;$('g-margen').textContent=total>0?fmtP(gan/total):'0%';
-  const pp={};
-  v.forEach(x=>{if(!pp[x.producto])pp[x.producto]={total:0,ganancia:0,qty:0};pp[x.producto].total+=x.total;pp[x.producto].ganancia+=x.ganancia;pp[x.producto].qty+=x.qty;});
+  const pp={};v.forEach(x=>{if(!pp[x.producto])pp[x.producto]={total:0,ganancia:0,qty:0};pp[x.producto].total+=x.total;pp[x.producto].ganancia+=x.ganancia;pp[x.producto].qty+=x.qty;});
   $('g-por-producto').innerHTML=!Object.keys(pp).length?'<div class="empty" style="padding:16px 0"><p>Sin datos</p></div>':
     Object.entries(pp).sort((a,b)=>b[1].ganancia-a[1].ganancia).map(([p,d])=>`
       <div class="card-sm" style="display:flex;justify-content:space-between;align-items:center">
@@ -612,85 +544,35 @@ function renderGanancias(){
     </div>`).join('');
 }
 
-// ── COMPARTIR ──────────────────────────────────────
+// ── COMPARTIR ──
 function renderCompartir(){
   const url=localStorage.getItem('gama_share_url')||'';
   $('share-url').value=url;if(url)updateLink();
 }
 window.updateLink=function(){
-  const url=$('share-url').value.trim();
-  localStorage.setItem('gama_share_url',url);
-  $('link-display-wrap').style.display=url?'block':'none';
-  if(url)$('link-display').textContent=url;
+  const url=$('share-url').value.trim();localStorage.setItem('gama_share_url',url);
+  $('link-display-wrap').style.display=url?'block':'none';if(url)$('link-display').textContent=url;
 };
 window.copyLink=function(){
-  const url=$('share-url').value.trim();
-  if(!url){toast('Ingresa una URL','var(--amber)','#0a0a0f');return;}
+  const url=$('share-url').value.trim();if(!url){toast('Ingresa una URL','var(--amber)','#0a0a0f');return;}
   navigator.clipboard.writeText(url).then(()=>toast('Link copiado ✓')).catch(()=>{
     const ta=document.createElement('textarea');ta.value=url;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);toast('Link copiado ✓');
   });
 };
 window.exportData=function(){
-  const data={lotes,ventas,exportado:new Date().toISOString()};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamastore-backup.json';a.click();
-  toast('Exportado ✓');
+  const blob=new Blob([JSON.stringify({lotes,ventas,exportado:new Date().toISOString()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamastore-backup.json';a.click();toast('Exportado ✓');
 };
 window.clearAllData=async function(){
-  if(!confirm('¿Borrar TODOS los datos? No se puede deshacer.'))return;
-  toast('Borrando...','var(--amber)','#0a0a0f');
+  if(!confirm('¿Borrar TODOS los datos?'))return;
   try{
-    for(const l of lotes)await deleteDoc(doc(db,'lotes',l.id));
-    for(const v of ventas)await deleteDoc(doc(db,'ventas',v.id));
+    await remove(ref(db,'lotes'));
+    await remove(ref(db,'ventas'));
     toast('Datos borrados','var(--red)','#fff');
   }catch(e){toast('Error: '+e.message,'var(--red)','#fff');}
 };
 
-// ── INIT ───────────────────────────────────────────
-let splashGone=false;
-function hideSplash(){
-  if(splashGone)return; splashGone=true;
-  setTimeout(()=>{
-    $('splash').classList.add('hide');
-    setTimeout(()=>$('splash').style.display='none',400);
-  },500);
-}
-setTimeout(hideSplash, 3500);
-
-window.addEventListener('online', ()=>$('offline-banner').classList.remove('show'));
-window.addEventListener('offline',()=>$('offline-banner').classList.add('show'));
-
-$('splash-msg').textContent='Conectando a Firebase...';
-
-// ── UN SOLO SET DE LISTENERS ──
-onSnapshot(
-  query(collection(db,'lotes'), orderBy('fecha','asc')),
-  snap => {
-    lotes = snap.docs.map(d=>({id:d.id,...d.data()}));
-    setDots('ok'); hideSplash(); refreshUI();
-  },
-  err => {
-    console.error('Lotes error:', err);
-    setDots('err');
-    hideSplash();
-    toast('Error Firestore: '+err.code,'var(--red)','#fff');
-  }
-);
-
-onSnapshot(
-  query(collection(db,'ventas'), orderBy('fecha','asc')),
-  snap => {
-    ventas = snap.docs.map(d=>({id:d.id,...d.data()}));
-    setDots('ok'); hideSplash(); refreshUI();
-  },
-  err => {
-    console.error('Ventas error:', err);
-    setDots('err');
-  }
-);
-
 renderVentaPage();
-
 </script>
 </body>
 </html>
