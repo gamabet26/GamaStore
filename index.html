@@ -104,6 +104,16 @@ select option{background:#12121a}
 .delete-btn:active{color:var(--red)}
 .offline-banner{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--amber);display:none;align-items:center;gap:8px}
 .offline-banner.show{display:flex}
+/* EDIT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px 32px;width:100%;max-width:480px;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.67,0)}
+.modal-overlay.open .modal{transform:translateY(0)}
+.modal-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:22px;line-height:1;padding:2px 6px}
+.edit-btn{background:none;border:none;color:var(--accent);cursor:pointer;padding:6px;border-radius:4px;flex-shrink:0}
+.edit-btn:active{opacity:.6}
+.lote-actions{display:flex;gap:4px;align-items:center}
 </style>
 </head>
 <body>
@@ -237,6 +247,26 @@ select option{background:#12121a}
   <div style="display:flex;gap:8px">
     <button class="btn btn-ghost btn-sm" onclick="exportData()" style="flex:1">Exportar JSON</button>
     <button class="btn btn-danger btn-sm" onclick="clearAllData()" style="flex:1">Borrar todo</button>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
+  <div class="modal">
+    <div class="modal-title">
+      <span>✏️ Editar lote</span>
+      <button class="modal-close" onclick="closeEditModal()">×</button>
+    </div>
+    <div class="field"><label>Nombre del producto</label><input type="text" id="e-nombre" autocomplete="off"></div>
+    <div class="row">
+      <div class="field"><label>Cantidad</label><input type="number" id="e-qty" min="1" inputmode="numeric"></div>
+      <div class="field"><label>Costo c/u ($)</label><input type="number" id="e-costo" min="0" inputmode="decimal"></div>
+    </div>
+    <div class="field" style="margin-bottom:16px"><label>Notas (opcional)</label><input type="text" id="e-nota" placeholder="Proveedor, etc."></div>
+    <button class="btn btn-primary" id="btn-edit-save" onclick="saveEdit()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Guardar cambios
+    </button>
   </div>
 </div>
 
@@ -485,6 +515,45 @@ window.deleteItem=async function(col,id){
   catch(e){toast('Error','var(--red)','#fff');}
 };
 
+// ── EDIT MODAL ──
+let editingId = null;
+window.openEditModal=function(id,nombre,qty,costo,nota){
+  editingId=id;
+  $('e-nombre').value=nombre;
+  $('e-qty').value=qty;
+  $('e-costo').value=costo;
+  $('e-nota').value=nota||'';
+  $('edit-modal').classList.add('open');
+};
+window.closeEditModal=function(e){
+  if(e && e.target !== $('edit-modal')) return;
+  $('edit-modal').classList.remove('open');
+  editingId=null;
+};
+window.saveEdit=async function(){
+  if(!editingId)return;
+  const nombre=$('e-nombre').value.trim();
+  const qty=parseFloat($('e-qty').value)||0;
+  const costo=parseFloat($('e-costo').value)||0;
+  const nota=$('e-nota').value.trim();
+  if(!nombre){toast('Ingresa el nombre','var(--red)','#fff');return;}
+  if(qty<=0){toast('Ingresa la cantidad','var(--red)','#fff');return;}
+  if(costo<=0){toast('Ingresa el costo','var(--red)','#fff');return;}
+  const btn=$('btn-edit-save');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Guardando...';
+  try{
+    // Preserve original fecha
+    const original=lotes.find(l=>l.id===editingId);
+    await set(ref(db,'lotes/'+editingId),{
+      producto:nombre,qty,costo,nota,
+      fecha:original?.fecha||nowISO()
+    });
+    toast('Lote actualizado ✓');
+    $('edit-modal').classList.remove('open');
+    editingId=null;
+  }catch(e){console.error(e);toast('Error: '+e.message,'var(--red)','#fff');}
+  btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios';
+};
+
 function renderInventario(){
   const cont=$('lista-inventario'),stock=getStock(),prods=Object.entries(stock);
   if(!prods.length){cont.innerHTML='<div class="empty"><p>Sin inventario aún</p></div>';return;}
@@ -503,9 +572,14 @@ function renderInventario(){
           <div style="font-size:11px;color:var(--muted)">${l.qty} uds · ${fmt(l.costo)}/u${l.nota?' · '+l.nota:''}</div>
           <div style="font-size:11px;color:var(--muted)">${new Date(l.fecha).toLocaleDateString('es-MX')}</div>
         </div>
-        <button class="delete-btn" onclick="deleteItem('lotes','${l.id}')">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-        </button>
+        <div class="lote-actions">
+          <button class="edit-btn" onclick="openEditModal('${l.id}','${l.producto.replace(/'/g,"\\'")}',${l.qty},${l.costo},'${(l.nota||'').replace(/'/g,"\\'")}')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="delete-btn" onclick="deleteItem('lotes','${l.id}')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+          </button>
+        </div>
       </div>`).join('');
   }
   cont.innerHTML=html;
