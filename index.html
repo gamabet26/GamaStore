@@ -104,6 +104,37 @@ select option{background:#12121a}
 .delete-btn:active{color:var(--red)}
 .offline-banner{background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--amber);display:none;align-items:center;gap:8px}
 .offline-banner.show{display:flex}
+/* SCANNER PAGE */
+.scan-page-header{display:flex;align-items:center;gap:10px;padding:12px 0 14px;border-bottom:1px solid var(--border);margin-bottom:16px}
+#scanner-box{position:relative;width:100%;max-width:340px;margin:0 auto 16px;border-radius:var(--radius);overflow:hidden;background:#000;aspect-ratio:1}
+#scanner-box video{width:100%;height:100%;object-fit:cover;display:block}
+.scan-frame{position:absolute;inset:0;pointer-events:none}
+.scan-frame::before{content:'';position:absolute;inset:20px;border:2px solid var(--accent);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
+.scan-line{position:absolute;left:22px;right:22px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scanline 1.8s ease-in-out infinite;top:22px}
+@keyframes scanline{0%,100%{top:22px;opacity:.8}50%{top:calc(100% - 24px);opacity:1}}
+.scan-btn{width:100%;padding:16px;border:2px dashed var(--border);border-radius:var(--radius);background:var(--surface);color:var(--muted);font-family:var(--display);font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s;letter-spacing:.3px}
+.scan-btn:active,.scan-btn.scanning{border-color:var(--accent);color:var(--accent);background:rgba(56,182,255,.08)}
+.cart-item{display:flex;align-items:center;gap:10px;background:rgba(18,18,26,.85);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-item-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.cart-item-price{font-family:var(--display);font-weight:700;font-size:15px;color:var(--accent);white-space:nowrap}
+.cart-qty-ctrl{display:flex;align-items:center;gap:6px}
+.qty-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:600}
+.qty-btn:active{background:var(--accent);color:#0a0a0f;border-color:var(--accent)}
+.qty-num{font-family:var(--display);font-weight:700;font-size:16px;min-width:20px;text-align:center}
+.cart-total-box{background:rgba(56,182,255,.08);border:1px solid rgba(56,182,255,.3);border-radius:var(--radius);padding:16px;margin:12px 0}
+.cart-total-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding:2px 0}
+.cart-total-main{display:flex;justify-content:space-between;font-family:var(--display);font-size:28px;font-weight:700;padding-top:10px;border-top:1px solid rgba(56,182,255,.3);margin-top:8px}
+.cart-empty{text-align:center;padding:28px 20px;color:var(--muted)}
+.scan-manual-row{display:flex;gap:8px;margin-bottom:12px}
+.scan-manual-row input{flex:1}
+.btn-cobrar{background:linear-gradient(135deg,var(--green),#22b874);color:#021a0a;font-size:18px;padding:16px;letter-spacing:.5px}
+.btn-cobrar:disabled{opacity:.4}
+/* Price edit inline */
+.price-input{width:80px;background:var(--surface2);border:1px solid var(--accent);border-radius:6px;color:var(--text);font-size:14px;font-family:var(--display);font-weight:700;padding:4px 6px;text-align:center}
+/* barcode field tag */
+.barcode-tag{display:inline-flex;align-items:center;gap:4px;background:rgba(56,182,255,.1);border:1px solid rgba(56,182,255,.25);border-radius:6px;padding:2px 8px;font-size:11px;color:var(--accent);font-family:'Courier New',monospace;margin-top:3px}
 /* EDIT MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .2s}
 .modal-overlay.open{opacity:1;pointer-events:all}
@@ -177,7 +208,8 @@ select option{background:#12121a}
       <div class="field"><label>Cantidad</label><input type="number" id="i-qty" min="1" placeholder="50" inputmode="numeric"></div>
       <div class="field"><label>Costo c/u ($)</label><input type="number" id="i-costo" min="0" placeholder="42.00" inputmode="decimal"></div>
     </div>
-    <div class="field" style="margin-bottom:0"><label>Notas (opcional)</label><input type="text" id="i-nota" placeholder="Proveedor, etc."></div>
+    <div class="field"><label>Notas (opcional)</label><input type="text" id="i-nota" placeholder="Proveedor, etc."></div>
+    <div class="field" style="margin-bottom:0"><label>Precio de venta ($)</label><input type="number" id="i-precio" min="0" placeholder="180.00" inputmode="decimal"></div>
   </div>
   <button class="btn btn-primary" id="btn-lote" onclick="agregarLote()" style="margin-bottom:20px">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -250,6 +282,50 @@ select option{background:#12121a}
   </div>
 </div>
 
+<!-- SCANNER / VENTA RAPIDA -->
+<div class="page" id="page-scanner">
+  <div class="page-header">
+    <div class="gs-logo">GS</div>
+    <div><div class="brand-name">Gama<span>Store</span></div><div class="brand-sub">Techn &amp; Gadgets</div></div>
+    <div class="header-right"><div class="sync-dot loading" id="dot-scan"></div><span class="section-label">VENTA RÁPIDA</span></div>
+  </div>
+
+  <!-- SCANNER BOX -->
+  <div id="scanner-box" style="display:none">
+    <video id="scan-video" playsinline autoplay muted></video>
+    <div class="scan-frame"><div class="scan-line"></div></div>
+  </div>
+
+  <!-- MANUAL / TRIGGER -->
+  <div class="scan-manual-row">
+    <input type="text" id="scan-manual" placeholder="Código de barras manual..." inputmode="numeric"
+           onkeydown="if(event.key==='Enter')addByBarcode($('scan-manual').value.trim())">
+    <button class="btn btn-ghost btn-sm" onclick="addByBarcode($('scan-manual').value.trim())" style="white-space:nowrap">+ Agregar</button>
+  </div>
+  <button class="scan-btn" id="btn-scan-cam" onclick="toggleScanner()">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg>
+    Escanear código de barras
+  </button>
+
+  <hr class="divider" style="margin:14px 0">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <div class="section-title" style="margin:0">Carrito</div>
+    <button onclick="clearCart()" style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--font)">Vaciar</button>
+  </div>
+  <div id="cart-list"><div class="cart-empty">Escanea o agrega productos</div></div>
+
+  <div class="cart-total-box" id="cart-total-box" style="display:none">
+    <div class="cart-total-row"><span>Productos</span><span id="cart-count">0</span></div>
+    <div class="cart-total-row"><span>Costo total</span><span id="cart-costo">$0</span></div>
+    <div class="cart-total-main"><span>Total a cobrar</span><span id="cart-total">$0</span></div>
+  </div>
+
+  <button class="btn btn-cobrar" id="btn-cobrar" onclick="cobrarCarrito()" disabled>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    Cobrar
+  </button>
+</div>
+
 <!-- EDIT MODAL -->
 <div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
   <div class="modal">
@@ -262,7 +338,9 @@ select option{background:#12121a}
       <div class="field"><label>Cantidad</label><input type="number" id="e-qty" min="1" inputmode="numeric"></div>
       <div class="field"><label>Costo c/u ($)</label><input type="number" id="e-costo" min="0" inputmode="decimal"></div>
     </div>
-    <div class="field" style="margin-bottom:16px"><label>Notas (opcional)</label><input type="text" id="e-nota" placeholder="Proveedor, etc."></div>
+    <div class="field"><label>Notas (opcional)</label><input type="text" id="e-nota" placeholder="Proveedor, etc."></div>
+    <div class="field"><label>Código de barras</label><input type="text" id="e-barcode" placeholder="1234567890123" inputmode="numeric"></div>
+    <div class="field" style="margin-bottom:16px"><label>Precio de venta ($)</label><input type="number" id="e-precio" min="0" placeholder="180.00" inputmode="decimal"></div>
     <button class="btn btn-primary" id="btn-edit-save" onclick="saveEdit()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
       Guardar cambios
@@ -283,6 +361,10 @@ select option{background:#12121a}
   <button id="nav-ganancias" onclick="showPage('ganancias')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
     Ganancias
+  </button>
+  <button id="nav-scanner" onclick="showPage('scanner')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg>
+    Escáner
   </button>
   <button id="nav-compartir" onclick="showPage('compartir')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -428,6 +510,7 @@ window.showPage=function(name){
   if(name==='inventario')renderInventario();
   if(name==='ganancias')renderGanancias();
   if(name==='compartir')renderCompartir();
+  if(name==='scanner')renderCart();
 };
 
 function refreshUI(){
@@ -436,6 +519,7 @@ function refreshUI(){
   if(n==='venta')renderVentaPage();
   if(n==='inventario')renderInventario();
   if(n==='ganancias')renderGanancias();
+  if(n==='scanner')renderCart();
 }
 
 // ── VENTA ──
@@ -496,14 +580,17 @@ function renderVentasHoy(){
 
 // ── INVENTARIO ──
 window.agregarLote=async function(){
-  const nombre=$('i-nombre').value.trim(),qty=parseFloat($('i-qty').value)||0,costo=parseFloat($('i-costo').value)||0,nota=$('i-nota').value.trim();
+  const nombre=$('i-nombre').value.trim(),qty=parseFloat($('i-qty').value)||0,
+        costo=parseFloat($('i-costo').value)||0,nota=$('i-nota').value.trim(),
+        precio=parseFloat($('i-precio').value)||0;
   if(!nombre){toast('Ingresa el nombre','var(--red)','#fff');return;}
   if(qty<=0){toast('Ingresa la cantidad','var(--red)','#fff');return;}
   if(costo<=0){toast('Ingresa el costo','var(--red)','#fff');return;}
   const btn=$('btn-lote');btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Guardando...';
   try{
-    await push(ref(db,'lotes'),{producto:nombre,qty,costo,nota,fecha:nowISO()});
-    $('i-nombre').value='';$('i-qty').value='';$('i-costo').value='';$('i-nota').value='';
+    await push(ref(db,'lotes'),{producto:nombre,qty,costo,precio,nota,fecha:nowISO()});
+    $('i-nombre').value='';$('i-qty').value='';$('i-costo').value='';
+    $('i-nota').value='';$('i-precio').value='';
     toast('Lote agregado ✓');
   }catch(e){console.error(e);toast('Error: '+e.message,'var(--red)','#fff');}
   btn.disabled=false;btn.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Agregar al inventario';
@@ -517,12 +604,15 @@ window.deleteItem=async function(col,id){
 
 // ── EDIT MODAL ──
 let editingId = null;
-window.openEditModal=function(id,nombre,qty,costo,nota){
+window.openEditModal=function(id){
+  const l=lotes.find(x=>x.id===id);if(!l)return;
   editingId=id;
-  $('e-nombre').value=nombre;
-  $('e-qty').value=qty;
-  $('e-costo').value=costo;
-  $('e-nota').value=nota||'';
+  $('e-nombre').value=l.producto||'';
+  $('e-qty').value=l.qty||'';
+  $('e-costo').value=l.costo||'';
+  $('e-nota').value=l.nota||'';
+  $('e-barcode').value=l.barcode||'';
+  $('e-precio').value=l.precio||'';
   $('edit-modal').classList.add('open');
 };
 window.closeEditModal=function(e){
@@ -543,8 +633,10 @@ window.saveEdit=async function(){
   try{
     // Preserve original fecha
     const original=lotes.find(l=>l.id===editingId);
+    const barcode=$('e-barcode').value.trim();
+    const precio=parseFloat($('e-precio').value)||0;
     await set(ref(db,'lotes/'+editingId),{
-      producto:nombre,qty,costo,nota,
+      producto:nombre,qty,costo,nota,barcode,precio,
       fecha:original?.fecha||nowISO()
     });
     toast('Lote actualizado ✓');
@@ -569,7 +661,8 @@ function renderInventario(){
       <div class="card-sm" style="display:flex;justify-content:space-between;align-items:center;gap:8px">
         <div style="flex:1;min-width:0">
           <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.producto}</div>
-          <div style="font-size:11px;color:var(--muted)">${l.qty} uds · ${fmt(l.costo)}/u${l.nota?' · '+l.nota:''}</div>
+          <div style="font-size:11px;color:var(--muted)">${l.qty} uds · ${fmt(l.costo)}/u · venta: ${fmt(l.precio||0)}${l.nota?' · '+l.nota:''}</div>
+          ${l.barcode?`<div class="barcode-tag">▌▌ ${l.barcode}</div>`:''}
           <div style="font-size:11px;color:var(--muted)">${new Date(l.fecha).toLocaleDateString('es-MX')}</div>
         </div>
         <div class="lote-actions">
@@ -645,6 +738,186 @@ window.clearAllData=async function(){
     toast('Datos borrados','var(--red)','#fff');
   }catch(e){toast('Error: '+e.message,'var(--red)','#fff');}
 };
+
+
+// ── SCANNER & CARRITO ──────────────────────────────
+let cart = []; // [{loteId, producto, precio, costo, qty}]
+let scannerActive = false;
+let scannerStream = null;
+
+// Barcode lookup: find lote by barcode, fallback to product name
+function findLoteByBarcode(code){
+  // exact barcode match
+  let found = lotes.find(l=>l.barcode && l.barcode.trim()===code.trim());
+  if(found) return found;
+  // partial: last 6 digits
+  const tail = code.slice(-6);
+  found = lotes.find(l=>l.barcode && l.barcode.slice(-6)===tail);
+  return found || null;
+}
+
+window.addByBarcode=function(code){
+  if(!code){toast('Ingresa un código','var(--amber)','#0a0a0f');return;}
+  $('scan-manual').value='';
+  const stock=getStock();
+  const lote=findLoteByBarcode(code);
+  if(!lote){
+    toast('Código no encontrado: '+code,'var(--red)','#fff');return;
+  }
+  const st=stock[lote.producto]?.stock||0;
+  if(st<=0){toast('Sin stock: '+lote.producto,'var(--amber)','#0a0a0f');return;}
+  // Check if already in cart
+  const existing=cart.find(c=>c.producto===lote.producto);
+  if(existing){
+    if(existing.qty >= st){toast('Stock máximo alcanzado','var(--amber)','#0a0a0f');return;}
+    existing.qty++;
+  } else {
+    cart.push({loteId:lote.id, producto:lote.producto,
+               precio:lote.precio||0, costo:lote.costo||0, qty:1});
+  }
+  toast('✓ '+lote.producto,'var(--green)','#021a0a');
+  renderCart();
+};
+
+window.removeFromCart=function(idx){
+  cart.splice(idx,1);renderCart();
+};
+
+window.changeQty=function(idx,delta){
+  const stock=getStock();
+  cart[idx].qty+=delta;
+  if(cart[idx].qty<=0){cart.splice(idx,1);}
+  else{
+    const maxStock=stock[cart[idx]?.producto]?.stock||0;
+    if(cart[idx] && cart[idx].qty>maxStock) cart[idx].qty=maxStock;
+  }
+  renderCart();
+};
+
+window.updateCartPrice=function(idx,val){
+  const p=parseFloat(val)||0;
+  if(cart[idx]) cart[idx].precio=p;
+  renderCart();
+};
+
+function renderCart(){
+  const list=$('cart-list'),tb=$('cart-total-box'),btnC=$('btn-cobrar');
+  if(!cart.length){
+    list.innerHTML='<div class="cart-empty">Escanea o agrega productos al carrito</div>';
+    tb.style.display='none';btnC.disabled=true;return;
+  }
+  list.innerHTML=cart.map((item,i)=>`
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.producto}</div>
+        <div class="cart-item-meta">Costo: ${fmt(item.costo)}/u</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+        <div style="display:flex;align-items:center;gap:4px">
+          <span style="font-size:11px;color:var(--muted)">$</span>
+          <input class="price-input" type="number" value="${item.precio}"
+                 onchange="updateCartPrice(${i},this.value)"
+                 inputmode="decimal" style="width:72px">
+        </div>
+        <div class="cart-qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+          <button class="delete-btn" onclick="removeFromCart(${i})" style="margin-left:2px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const totalVenta=cart.reduce((s,c)=>s+c.precio*c.qty,0);
+  const totalCosto=cart.reduce((s,c)=>s+c.costo*c.qty,0);
+  const totalQty=cart.reduce((s,c)=>s+c.qty,0);
+  $('cart-count').textContent=totalQty+' producto'+(totalQty!==1?'s':'');
+  $('cart-costo').textContent=fmt(totalCosto);
+  $('cart-total').textContent=fmt(totalVenta);
+  tb.style.display='block';btnC.disabled=false;
+}
+
+window.clearCart=function(){cart=[];renderCart();};
+
+window.cobrarCarrito=async function(){
+  if(!cart.length)return;
+  const btn=$('btn-cobrar');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Procesando...';
+  try{
+    // Register each cart item as a sale
+    for(const item of cart){
+      await push(ref(db,'ventas'),{
+        producto:item.producto,
+        qty:item.qty,
+        precioUnit:item.precio,
+        costo:item.costo,
+        total:item.precio*item.qty,
+        ganancia:(item.precio-item.costo)*item.qty,
+        fecha:nowISO(),
+        canal:'ESCANER'
+      });
+    }
+    const total=cart.reduce((s,c)=>s+c.precio*c.qty,0);
+    toast('¡Cobrado! '+fmt(total),'var(--green)','#021a0a');
+    cart=[];renderCart();
+  }catch(e){
+    console.error(e);toast('Error: '+e.message,'var(--red)','#fff');
+  }
+  btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Cobrar';
+};
+
+// ── CAMERA BARCODE SCANNER (BarcodeDetector API) ──
+window.toggleScanner=async function(){
+  if(scannerActive){stopScanner();return;}
+  if(!('BarcodeDetector' in window)){
+    toast('Tu navegador no soporta escáner. Usa Chrome en Android.','var(--amber)','#0a0a0f');
+    return;
+  }
+  try{
+    scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
+    const video=$('scan-video');
+    video.srcObject=scannerStream;
+    $('scanner-box').style.display='block';
+    $('btn-scan-cam').classList.add('scanning');
+    $('btn-scan-cam').innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Detener escáner';
+    scannerActive=true;
+    scanLoop();
+  }catch(e){
+    toast('No se pudo acceder a la cámara','var(--red)','#fff');
+  }
+};
+
+function stopScanner(){
+  if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
+  $('scanner-box').style.display='none';
+  $('btn-scan-cam').classList.remove('scanning');
+  $('btn-scan-cam').innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras';
+  scannerActive=false;
+}
+
+let lastScanned='', lastScannedTime=0;
+async function scanLoop(){
+  if(!scannerActive)return;
+  const video=$('scan-video');
+  if(video.readyState!==video.HAVE_ENOUGH_DATA){requestAnimationFrame(scanLoop);return;}
+  try{
+    const detector=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e']});
+    const codes=await detector.detect(video);
+    if(codes.length>0){
+      const code=codes[0].rawValue;
+      const now=Date.now();
+      if(code!==lastScanned || now-lastScannedTime>2000){
+        lastScanned=code;lastScannedTime=now;
+        // vibrate feedback
+        if(navigator.vibrate)navigator.vibrate(60);
+        addByBarcode(code);
+      }
+    }
+  }catch(e){}
+  if(scannerActive)requestAnimationFrame(scanLoop);
+}
 
 renderVentaPage();
 </script>
