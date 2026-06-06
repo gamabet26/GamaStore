@@ -868,56 +868,95 @@ window.cobrarCarrito=async function(){
   btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Cobrar';
 };
 
-// ── CAMERA BARCODE SCANNER (BarcodeDetector API) ──
+// ── BARCODE SCANNER: ZXing – funciona en iOS Safari y Android Chrome ──
+// Carga ZXing dinámicamente solo cuando se necesita
+let zxingReader = null;
+
+async function loadZXing(){
+  if(window.ZXing) return true;
+  return new Promise(resolve=>{
+    const s=document.createElement('script');
+    s.src='https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js';
+    s.onload=()=>resolve(true);
+    s.onerror=()=>resolve(false);
+    document.head.appendChild(s);
+  });
+}
+
 window.toggleScanner=async function(){
   if(scannerActive){stopScanner();return;}
-  if(!('BarcodeDetector' in window)){
-    toast('Tu navegador no soporta escáner. Usa Chrome en Android.','var(--amber)','#0a0a0f');
+  const btn=$('btn-scan-cam');
+  btn.innerHTML='<span class="spinner"></span> Cargando escáner...';
+  btn.disabled=true;
+
+  const loaded=await loadZXing();
+  if(!loaded){
+    btn.disabled=false;
+    btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras';
+    toast('Sin internet para cargar escáner','var(--red)','#fff');
     return;
   }
+
   try{
-    scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
-    const video=$('scan-video');
-    video.srcObject=scannerStream;
+    const hints=new Map();
+    const formats=[
+      ZXing.BarcodeFormat.EAN_13,
+      ZXing.BarcodeFormat.EAN_8,
+      ZXing.BarcodeFormat.CODE_128,
+      ZXing.BarcodeFormat.CODE_39,
+      ZXing.BarcodeFormat.UPC_A,
+      ZXing.BarcodeFormat.UPC_E,
+    ];
+    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
+    zxingReader = new ZXing.BrowserMultiFormatReader(hints, 300);
+
+    const devices = await ZXing.BrowserCodeReader.listVideoInputDevices();
+    // prefer back camera
+    const cam = devices.find(d=>/back|rear|environment/i.test(d.label)) || devices[devices.length-1];
+    const deviceId = cam?.deviceId;
+
     $('scanner-box').style.display='block';
-    $('btn-scan-cam').classList.add('scanning');
-    $('btn-scan-cam').innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Detener escáner';
+    btn.classList.add('scanning');
+    btn.disabled=false;
+    btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Detener escáner';
     scannerActive=true;
-    scanLoop();
+
+    let lastCode='', lastTime=0;
+    await zxingReader.decodeFromVideoDevice(deviceId, 'scan-video', (result, err)=>{
+      if(result){
+        const code=result.getText();
+        const now=Date.now();
+        if(code!==lastCode || now-lastTime>2000){
+          lastCode=code; lastTime=now;
+          if(navigator.vibrate)navigator.vibrate(80);
+          addByBarcode(code);
+        }
+      }
+    });
   }catch(e){
+    console.error(e);
+    stopScanner();
     toast('No se pudo acceder a la cámara','var(--red)','#fff');
   }
 };
 
 function stopScanner(){
-  if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
+  try{ if(zxingReader) zxingReader.reset(); }catch(e){}
+  zxingReader=null;
   $('scanner-box').style.display='none';
-  $('btn-scan-cam').classList.remove('scanning');
-  $('btn-scan-cam').innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras';
+  const btn=$('btn-scan-cam');
+  btn.classList.remove('scanning');
+  btn.disabled=false;
+  btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras';
   scannerActive=false;
 }
 
-let lastScanned='', lastScannedTime=0;
-async function scanLoop(){
-  if(!scannerActive)return;
-  const video=$('scan-video');
-  if(video.readyState!==video.HAVE_ENOUGH_DATA){requestAnimationFrame(scanLoop);return;}
-  try{
-    const detector=new BarcodeDetector({formats:['ean_13','ean_8','code_128','code_39','upc_a','upc_e']});
-    const codes=await detector.detect(video);
-    if(codes.length>0){
-      const code=codes[0].rawValue;
-      const now=Date.now();
-      if(code!==lastScanned || now-lastScannedTime>2000){
-        lastScanned=code;lastScannedTime=now;
-        // vibrate feedback
-        if(navigator.vibrate)navigator.vibrate(60);
-        addByBarcode(code);
-      }
-    }
-  }catch(e){}
-  if(scannerActive)requestAnimationFrame(scanLoop);
-}
+// Detener escáner al cambiar de página
+const _origShowPage=window.showPage;
+window.showPage=function(name){
+  if(scannerActive && name!=='scanner') stopScanner();
+  _origShowPage(name);
+};
 
 renderVentaPage();
 </script>
