@@ -762,14 +762,25 @@ function findLoteByBarcode(code){
 window.addByBarcode=function(code){
   if(!code){toast('Ingresa un código','var(--amber)','#0a0a0f');return;}
   $('scan-manual').value='';
+  
+  // DEBUG: mostrar qué hay en inventario
+  console.log('=== BUSCAR CÓDIGO ===', code);
+  console.log('Lotes en memoria:', lotes.length);
+  lotes.forEach(l=>console.log(' -', l.producto, '| barcode:', JSON.stringify(l.barcode), '| precio:', l.precio));
+  
   const stock=getStock();
   const lote=findLoteByBarcode(code);
+  
+  console.log('Lote encontrado:', lote ? lote.producto : 'NINGUNO');
+  
   if(!lote){
-    toast('Código no encontrado: '+code,'var(--red)','#fff');return;
+    // Mostrar qué códigos existen para ayudar al diagnóstico
+    const codigos = lotes.map(l=>l.barcode||'(sin código)').join(', ');
+    toast('No encontrado: '+code+' | Registrados: '+codigos,'var(--red)','#fff');
+    return;
   }
   const st=stock[lote.producto]?.stock||0;
   if(st<=0){toast('Sin stock: '+lote.producto,'var(--amber)','#0a0a0f');return;}
-  // Check if already in cart
   const existing=cart.find(c=>c.producto===lote.producto);
   if(existing){
     if(existing.qty >= st){toast('Stock máximo alcanzado','var(--amber)','#0a0a0f');return;}
