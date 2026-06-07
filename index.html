@@ -107,7 +107,9 @@ select option{background:#12121a}
 /* SCANNER PAGE */
 .scan-page-header{display:flex;align-items:center;gap:10px;padding:12px 0 14px;border-bottom:1px solid var(--border);margin-bottom:16px}
 #scanner-box{position:relative;width:100%;max-width:340px;margin:0 auto 16px;border-radius:var(--radius);overflow:hidden;background:#000;aspect-ratio:1}
-#scanner-box video{width:100%;height:100%;object-fit:cover;display:block}
+#scanner-box video{width:100%!important;height:100%!important;object-fit:cover;display:block;position:absolute;top:0;left:0}
+#scanner-box canvas{position:absolute;top:0;left:0;width:100%!important;height:100%!important}
+#scan-video{width:100%;height:100%;position:relative}
 .scan-frame{position:absolute;inset:0;pointer-events:none}
 .scan-frame::before{content:'';position:absolute;inset:20px;border:2px solid var(--accent);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.45)}
 .scan-line{position:absolute;left:22px;right:22px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scanline 1.8s ease-in-out infinite;top:22px}
@@ -292,7 +294,7 @@ select option{background:#12121a}
 
   <!-- SCANNER BOX -->
   <div id="scanner-box" style="display:none">
-    <video id="scan-video" playsinline autoplay muted></video>
+    <div id="scan-video" style="width:100%;height:100%"></div>
     <div class="scan-frame"><div class="scan-line"></div></div>
   </div>
 
@@ -868,86 +870,105 @@ window.cobrarCarrito=async function(){
   btn.disabled=false;btn.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Cobrar';
 };
 
-// ── BARCODE SCANNER: ZXing – funciona en iOS Safari y Android Chrome ──
-// Carga ZXing dinámicamente solo cuando se necesita
-let zxingReader = null;
+// ── BARCODE SCANNER ──────────────────────────────────
+// Usa QuaggaJS — librería que funciona en iOS Safari, Chrome, Firefox
+// Se carga dinámicamente al primer uso
 
-async function loadZXing(){
-  if(window.ZXing) return true;
+let quaggaLoaded = false;
+
+async function loadQuagga(){
+  if(window.Quagga) return true;
   return new Promise(resolve=>{
     const s=document.createElement('script');
-    s.src='https://unpkg.com/@zxing/library@0.19.1/umd/index.min.js';
-    s.onload=()=>resolve(true);
+    s.src='https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js';
+    s.onload=()=>{ quaggaLoaded=true; resolve(true); };
     s.onerror=()=>resolve(false);
     document.head.appendChild(s);
   });
 }
 
+const SCAN_BTN_DEFAULT = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras`;
+const SCAN_BTN_STOP   = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Detener escáner`;
+
 window.toggleScanner=async function(){
-  if(scannerActive){stopScanner();return;}
+  if(scannerActive){ stopScanner(); return; }
   const btn=$('btn-scan-cam');
-  btn.innerHTML='<span class="spinner"></span> Cargando escáner...';
+  btn.innerHTML='<span class="spinner"></span> Iniciando...';
   btn.disabled=true;
 
-  const loaded=await loadZXing();
+  const loaded = await loadQuagga();
   if(!loaded){
-    btn.disabled=false;
-    btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras';
-    toast('Sin internet para cargar escáner','var(--red)','#fff');
+    btn.disabled=false; btn.innerHTML=SCAN_BTN_DEFAULT;
+    toast('No se pudo cargar el escáner','var(--red)','#fff');
     return;
   }
 
+  // Primero obtener permiso de cámara explícitamente — clave en iOS
   try{
-    const hints=new Map();
-    const formats=[
-      ZXing.BarcodeFormat.EAN_13,
-      ZXing.BarcodeFormat.EAN_8,
-      ZXing.BarcodeFormat.CODE_128,
-      ZXing.BarcodeFormat.CODE_39,
-      ZXing.BarcodeFormat.UPC_A,
-      ZXing.BarcodeFormat.UPC_E,
-    ];
-    hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
-    zxingReader = new ZXing.BrowserMultiFormatReader(hints, 300);
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video:{ facingMode:{ideal:'environment'} }
+    });
+    // Detener el stream de prueba — Quagga abrirá el suyo
+    stream.getTracks().forEach(t=>t.stop());
+  }catch(e){
+    console.error('Permiso cámara:', e);
+    btn.disabled=false; btn.innerHTML=SCAN_BTN_DEFAULT;
+    toast('Permiso de cámara denegado — actívalo en Configuración','var(--amber)','#0a0a0f');
+    return;
+  }
 
-    const devices = await ZXing.BrowserCodeReader.listVideoInputDevices();
-    // prefer back camera
-    const cam = devices.find(d=>/back|rear|environment/i.test(d.label)) || devices[devices.length-1];
-    const deviceId = cam?.deviceId;
+  $('scanner-box').style.display='block';
 
-    $('scanner-box').style.display='block';
-    btn.classList.add('scanning');
-    btn.disabled=false;
-    btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Detener escáner';
+  Quagga.init({
+    inputStream:{
+      name:'Live',
+      type:'LiveStream',
+      target: document.getElementById('scan-video'),
+      constraints:{
+        facingMode: 'environment',
+        width: {min:320, ideal:640, max:1280},
+        height:{min:240, ideal:480, max:720}
+      }
+    },
+    decoder:{
+      readers:['ean_reader','ean_8_reader','code_128_reader','code_39_reader','upc_reader','upc_e_reader']
+    },
+    locate: true
+  }, function(err){
+    if(err){
+      console.error('Quagga init:', err);
+      $('scanner-box').style.display='none';
+      btn.disabled=false; btn.innerHTML=SCAN_BTN_DEFAULT;
+      toast('Error al iniciar escáner','var(--red)','#fff');
+      return;
+    }
+    Quagga.start();
     scannerActive=true;
+    btn.disabled=false; btn.classList.add('scanning');
+    btn.innerHTML=SCAN_BTN_STOP;
 
     let lastCode='', lastTime=0;
-    await zxingReader.decodeFromVideoDevice(deviceId, 'scan-video', (result, err)=>{
-      if(result){
-        const code=result.getText();
-        const now=Date.now();
-        if(code!==lastCode || now-lastTime>2000){
-          lastCode=code; lastTime=now;
-          if(navigator.vibrate)navigator.vibrate(80);
-          addByBarcode(code);
-        }
+    Quagga.onDetected(function(data){
+      const code=data.codeResult.code;
+      const now=Date.now();
+      if(code && (code!==lastCode || now-lastTime>2000)){
+        lastCode=code; lastTime=now;
+        if(navigator.vibrate) navigator.vibrate(80);
+        addByBarcode(code);
       }
     });
-  }catch(e){
-    console.error(e);
-    stopScanner();
-    toast('No se pudo acceder a la cámara','var(--red)','#fff');
-  }
+  });
 };
 
 function stopScanner(){
-  try{ if(zxingReader) zxingReader.reset(); }catch(e){}
-  zxingReader=null;
+  if(window.Quagga && scannerActive){
+    try{ Quagga.offDetected(); Quagga.stop(); }catch(e){}
+  }
   $('scanner-box').style.display='none';
   const btn=$('btn-scan-cam');
   btn.classList.remove('scanning');
   btn.disabled=false;
-  btn.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg> Escanear código de barras';
+  btn.innerHTML=SCAN_BTN_DEFAULT;
   scannerActive=false;
 }
 
