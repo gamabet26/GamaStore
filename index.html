@@ -443,7 +443,8 @@ const db = getDatabase(app);
 
 // ── ESTADO ──
 let lotes=[], ventas=[];
-const $=id=>document.getElementById(id);
+window.$=id=>document.getElementById(id);
+const $=window.$;
 const fmt=n=>'$'+Number(n).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtP=n=>(n*100).toFixed(1)+'%';
 const today=()=>new Date().toISOString().slice(0,10);
