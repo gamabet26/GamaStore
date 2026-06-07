@@ -302,8 +302,8 @@ select option{background:#12121a}
   <!-- MANUAL / TRIGGER -->
   <div class="scan-manual-row">
     <input type="text" id="scan-manual" placeholder="Código de barras manual..." inputmode="numeric"
-           onkeydown="if(event.key==='Enter')addByBarcode($('scan-manual').value.trim())">
-    <button class="btn btn-ghost btn-sm" onclick="addByBarcode($('scan-manual').value.trim())" style="white-space:nowrap">+ Agregar</button>
+           onkeydown="if(event.key==='Enter')addByBarcode(document.getElementById('scan-manual').value.trim())">
+    <button class="btn btn-ghost btn-sm" onclick="addByBarcode(document.getElementById('scan-manual').value.trim())" style="white-space:nowrap">+ Agregar</button>
   </div>
   <button class="scan-btn" id="btn-scan-cam" onclick="toggleScanner()">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v4M17 2v4M7 18v4M17 18v4M2 7h4M18 7h4M2 17h4M18 17h4"/></svg>
